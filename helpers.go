@@ -42,8 +42,8 @@ import (
 	"github.com/blang/semver"
 	"github.com/rakyll/pb"
 	"github.com/spf13/viper"
-	// until github.com/mitchellh/go-ps consumes it
-	"github.com/yeonsh/go-ps"
+	// looks to be he new upstream
+	"github.com/keybase/go-ps"
 	"golang.org/x/crypto/openpgp"
 	"golang.org/x/crypto/openpgp/clearsign"
 	"golang.org/x/crypto/ssh"
@@ -343,7 +343,14 @@ func normalizeVersion(version string) string {
 }
 
 func (vm *VMInfo) isActive() bool {
-	if p, _ := ps.FindProcess(vm.Pid); p == nil ||
+
+	fmt.Printf("vm.isActive vm.Name=%s vm.Pid=%v\n", vm.Name, vm.Pid)
+	p, err := ps.FindProcess(vm.Pid)
+	fmt.Printf("vm.isActive p=%v e=%v", p, err)
+	if p != nil {
+		fmt.Println("vm.isActive (2) p=", p.Executable())
+	}
+	if p == nil ||
 		!strings.HasSuffix(p.Executable(), "corectl") {
 		return false
 	}
